@@ -8,8 +8,12 @@
           <div class="travelTime">
             <div class="style color">出差时间</div>
             <div class="travelTimeSel style">
-                <div type="text" class="time" @click="startTime('picker')">{{sT}}</div>—
-                <div type="text" class="time" @click='endTime'>{{eT}}</div>
+                <div type="text" class="time" @click="startTime('startDate')">{{sT}}
+                    <!-- <mt-datetime-picker ref='startDate' v-model="dateShow" type="date" :startDate='sd'  year-format="{value}年" month-format="{value}月" date-format="{value}日" @confirm='selectDate'></mt-datetime-picker> -->
+                </div>—
+                <div type="text" class="time" @click='endTime()'>{{eT}}
+                     <!-- <mt-datetime-picker ref='endDate' v-model="dateShow" type="date" :startDate='sd'  year-format="{value}年" month-format="{value}月" date-format="{value}日" @confirm='selectDateEnd'></mt-datetime-picker> -->
+                </div>
                 <div style="margin-left:0.1rem;" v-show='langTime>0'>共{{langTime}}天</div>
             </div>
           </div>
@@ -80,43 +84,19 @@
              </ul>
          </div>
      </div>
-     <mt-popup v-model="cityShow" :closeOnClickModal='show' position="bottom">
+     <div>
+          <mt-popup v-model="cityShow" :closeOnClickModal='show' position="bottom">
          <div class="pickerBtn">
              <div @click='closePopup'>取消</div>
              <div @click='chooseCityStart'>确定</div>
          </div>
         <mt-picker ref="picker" :slots="slots" value-key='citysName'  @change='onValuesChange'>Picker</mt-picker>
     </mt-popup>
-     <div @click="open('picker1')" size="large">日期选择</div>
-      <mt-datetime-picker
-  v-model="pickerVisible"
-  type="date"
-  year-format="{value} 年"
-  month-format="{value} 月"
-  date-format="{value} 日">
-</mt-datetime-picker>
-    </div>
-    <!-- <mt-popup v-model="cityShow" :closeOnClickModal='show' position="bottom"> -->
-         <!-- <div class="pickerBtn">
-             <div @click='closePopup'>取消</div>
-             <div @click='chooseCityStart'>确定</div>
-         </div> -->
-          <!-- <mt-datetime-picker ref="picker" type="date"  v-model="timeShow"></mt-datetime-picker> -->
-          <!-- <mt-datetime-picker
-      ref="picker1"
-      type="date"
-      v-model='dateShow'
-      year-format="{value} 年"
-      month-format="{value} 月"
-      date-format="{value} 日"
-      :startDate="startDate"
-      :endDate="endDate"
-      @confirm="selectDate">
-    </mt-datetime-picker> -->
-    <!-- </mt-popup> -->
-   <!-- <mt-picker :slots="slots" @change="cityselect"></mt-picker> -->
-     <!-- <picker :slots="cityList" @change='cityselect'>选择城市</picker> -->
-     <!-- <Piker :slots="cityList" @change='cityselect'>选择城市</Piker> -->
+     </div>
+    
+      
+     
+    <!-- </div> -->
   </div>
 </template>
 <script>
@@ -126,15 +106,14 @@ export default {
     name:"apply",
     data(){
         return{
-            pickerVisible:true,
             show:false,
             sT:"起始时间",
             eT:"结束时间",
-            sd:new Date('1970-01-01'),
+            sd:new Date(),
             ed:new Date(),
             startPlace:'出发地',
             endPlace:"目的地",
-            dateShow:true,//时间Picker默认不显示
+            dateShow:false,//时间Picker默认不显示
             startDate:new Date('1970-01-01'),
             endDate:new Date(),
             cityState:'0',
@@ -246,14 +225,14 @@ export default {
     },
     methods:{
         open:function(picker){
-             this.$refs[picker].open();
+             
         },
         handleChange:function(){
 
         },
         //选择初始时间
-        startTime:function(){
-            
+        startTime:function(picker){
+            this.$refs[picker].open();
     //         this.$picker.show({
     //             type:'datePicker',
     //             onOk: (date) =>{
@@ -267,7 +246,13 @@ export default {
     //    });
         },
         //选择结束时间
-        endTime:function(){
+        endTime:function(picker){
+            
+            // if(this.sT){
+            //    this.$refs[picker].open(); 
+            // }else{
+                
+            // }
     //         this.$picker.show({
     //             type:'datePicker',
     //             onOk: (date) =>{
@@ -285,6 +270,15 @@ export default {
         },
         //选择初始日期
         selectDate:function(value){
+            console.log(value.toUTCString())
+            var year=value.getFullYear();
+            var month=value.getMonth()+1;
+            var day=value.getDate()
+            this.sT=month+'月'+day+'日'
+            console.log(year,month,day)
+        },
+        //选择结束时间
+        selectDateEnd:function(value){
             console.log(value)
         },
         //出发地
@@ -373,14 +367,14 @@ export default {
                }
            })
     },
-     rexTime:function (startTime,endTime){//验证输入时间
-     console.log(startTime)
-        if(startTime!=null){
-            var st=new Date(startTime).getTime();
-            var et=new Date(endTime).getTime();
-                this.langTime=(et-st)/(1000*60*60*24)+1;
-        }  
-    },
+    //  rexTime:function (startTime,endTime){//验证输入时间
+    //  console.log(startTime)
+    //     if(startTime!=null){
+    //         var st=new Date(startTime).getTime();
+    //         var et=new Date(endTime).getTime();
+    //             this.langTime=(et-st)/(1000*60*60*24)+1;
+    //     }  
+    // },
     //选择城市
     onValuesChange:function(picker,value){
         if(value[0]){
