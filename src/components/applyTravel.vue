@@ -3,18 +3,14 @@
       <div class="applyTop">
           <div class="applyPeople style color">
               <div class="">申请人</div>
-              <div style="height:100%;line-height:0.86rem;">老亚瑟</div>
+              <div style="height:100%;line-height:0.86rem;">{{userName}}</div>
           </div>
           <div class="travelTime">
             <div class="style color">出差时间</div>
             <div class="travelTimeSel style">
-                <div type="text" class="time" @click="startTime('startDate')">{{sT}}
-                    <!-- <mt-datetime-picker ref='startDate' v-model="dateShow" type="date" :startDate='sd'  year-format="{value}年" month-format="{value}月" date-format="{value}日" @confirm='selectDate'></mt-datetime-picker> -->
-                </div>—
-                <div type="text" class="time" @click='endTime()'>{{eT}}
-                     <!-- <mt-datetime-picker ref='endDate' v-model="dateShow" type="date" :startDate='sd'  year-format="{value}年" month-format="{value}月" date-format="{value}日" @confirm='selectDateEnd'></mt-datetime-picker> -->
-                </div>
-                <div style="margin-left:0.1rem;" v-show='langTime>0'>共{{langTime}}天</div>
+                <div class="time" @click="startTime('startDate')">{{sT}}</div>—
+                <div class="time" @click="endTime('endT')">{{eT}}</div>
+                <div style="margin-left:0.1rem;" v-show='langDay>0'>共{{langDay}}天</div>
             </div>
           </div>
           <div class="travelAddress">
@@ -33,7 +29,6 @@
                   <div @click.stop="addPeople"><img class="addP" src="../assets/addP.png" alt=""></div>
               </div>
           </div>
-          <!--  v-show="travelPeople==null" -->
           <keep-alive>
           <div class="travelPeoplesList"  v-for="(item,index) in travelPeople" :key='index' v-if='travelPeople!=""' :id='item.businessEmpId'>
               <div class="travelPeoplesList_con" :style="textStyle"   @touchstart.prevent='touchStart($event)' @touchend='touchEnd($event)' @touchmove='touchMove($event)'>
@@ -84,7 +79,6 @@
              </ul>
          </div>
      </div>
-     <div>
           <mt-popup v-model="cityShow" :closeOnClickModal='show' position="bottom">
          <div class="pickerBtn">
              <div @click='closePopup'>取消</div>
@@ -92,8 +86,9 @@
          </div>
         <mt-picker ref="picker" :slots="slots" value-key='citysName'  @change='onValuesChange'>Picker</mt-picker>
     </mt-popup>
-     </div>
-    
+     <!-- 开始时间和结束时间 -->
+    <mt-datetime-picker ref='startDate' v-model="dateShow" type="date" :startDate='startDate'  year-format="{value}年" month-format="{value}月" date-format="{value}日" @confirm='selectDate'></mt-datetime-picker> 
+    <mt-datetime-picker ref='endT' v-model="endDateShow" type="date" :startDate='startDate'  year-format="{value}年" month-format="{value}月" date-format="{value}日" @confirm='selectDateEnd'></mt-datetime-picker>
       
      
     <!-- </div> -->
@@ -102,22 +97,29 @@
 <script>
 import store from '../vuex/vuex'
 import city from '../../static/js/city'
+import {Toast} from 'mint-ui';
+import '../../static/css/global.css'
 export default {
     name:"apply",
     data(){
         return{
+            userName:'鬼大师',
             show:false,
-            sT:"起始时间",
-            eT:"结束时间",
-            sd:new Date(),
-            ed:new Date(),
-            startPlace:'出发地',
-            endPlace:"目的地",
+            endDateShow:false,//结束时间，默认不显示
+            sT:"起始时间",//页面显示的开始时间
+            eT:"结束时间",//页面显示的结束时间
+            sDate:'',//出发时间
+            eDate:'',//结束时间
+            langDay:'0',//出差天数
+            startD:'',
+            endD:'',
+            startPlace:'出发地',//页面默认显示的出发地
+            endPlace:"目的地",//页面默认显示的目的地
             dateShow:false,//时间Picker默认不显示
-            startDate:new Date('1970-01-01'),
-            endDate:new Date(),
+            startDate:new Date(),//datePicker默认显示的时间
+            endDate:new Date(''+new Date().getFullYear()+20+''),//datePicker默认显示的时间
             cityState:'0',
-            langTime:0,
+            langTime:false,
             travelBy:'请选择交通方式',
             botCon:false,
             botShow:false,
@@ -162,7 +164,8 @@ export default {
     store,
     created(){
          var url=store.state;
-         console.log(this.startDate)
+         console.log(new Date(''+(new Date().getFullYear()+100)+''))
+         console.log(new Date(new Date().getFullYear()+100))
         // this.getWay(url,this,0)
     },
     mounted(){
@@ -217,69 +220,73 @@ export default {
                     if(disx>0&&disx/100>1.42/2){
                         $(this).find('.travelPeoplesList_con').css({'transform':'translateX(-1.42rem)','transition': 'all .3s'})
                     }
-                   
                 })
-                
             }
-           
     },
     methods:{
-        open:function(picker){
-             
-        },
-        handleChange:function(){
-
-        },
         //选择初始时间
         startTime:function(picker){
             this.$refs[picker].open();
-    //         this.$picker.show({
-    //             type:'datePicker',
-    //             onOk: (date) =>{
-    //                 this.startDate=date;
-    //                 var date=date.split('-')
-    //                 date=date[1]+'月'+date[2]+'日'
-    //                 this.sT = date;
-                
-    //             console.log(date)
-    //             }
-    //    });
         },
         //选择结束时间
         endTime:function(picker){
-            
-            // if(this.sT){
-            //    this.$refs[picker].open(); 
-            // }else{
-                
-            // }
-    //         this.$picker.show({
-    //             type:'datePicker',
-    //             onOk: (date) =>{
-    //                 if(this.startDate){//如果初始时间存在
-    //                      this.endDate=date;
-    //                     var date=date.split('-');
-    //                     date=date[1]+'月'+date[2]+'日';
-    //                     this.eT = date;
-    //                     this.rexTime(this.startDate,this.endDate)   
-    //                 }else{
-    //                       this.$message({message:'初始时间未填，请先填写初始时间',type:'warning'});
-    //                 }
-    //             }
-    //    });
+            console.log(this.sT)
+            if(this.sT=="起始时间"){
+                Toast('请先选择起始时间！')
+            }else{
+             this.$refs[picker].open();
+            }
         },
         //选择初始日期
         selectDate:function(value){
-            console.log(value.toUTCString())
             var year=value.getFullYear();
             var month=value.getMonth()+1;
             var day=value.getDate()
-            this.sT=month+'月'+day+'日'
-            console.log(year,month,day)
+            console.log(value.getTime())
+            console.log(new Date(this.eDate))
+            if(!this.eDate||(this.eDate&&this.eDate!=''&&new Date(this.eDate).getTime()>value.getTime())){
+                this.sT=month+'月'+day+'日'
+                var Mon=this.changeDate(month);
+                var Day=this.changeDate(day);
+                this.sDate=year+'-'+Mon+'-'+Day
+                if(this.eDate){
+                    var startD=new Date(value).getTime();
+                    var endD=new Date(this.eDate).getTime();
+                    var longDay=Math.ceil((endD-startD)/(1000*3600*24))
+                    this.langDay=longDay;
+                }
+            }else{
+                Toast({
+                    message:'开始时间不能大于结束时间！',
+                    position:'bottom'
+                })
+            }
+            
         },
         //选择结束时间
         selectDateEnd:function(value){
-            console.log(value)
+            var year=value.getFullYear();
+            var month=value.getMonth()+1;
+            var day=value.getDate();
+            
+            var Mon=this.changeDate(month);
+            var Day=this.changeDate(day)
+           
+            var startD=new Date(this.sDate).getTime();
+            var endD=new Date(value).getTime();
+            if(endD>startD){
+                this.eT=month+'月'+day+"日";
+                this.eDate=year+'-'+Mon+'-'+Day
+                var longDay=Math.ceil((endD-startD)/(1000*3600*24))
+                console.log((endD-startD)/(1000*3600*24))
+                this.langDay=longDay;
+            }else{
+                Toast({
+                    message:'结束时间不能小于开始时间！',
+                    position:'bottom'
+                })
+            }
+            
         },
         //出发地
         startP:function(value){
@@ -397,8 +404,6 @@ export default {
     },
     //确定城市
     chooseCityStart:function(){
-        console.log(this.cityState)
-        
         if(this.cityState==0){
             if(this.province||this.city){
                 this.startPlace=this.province+'-'+this.city;
@@ -410,6 +415,16 @@ export default {
             }
         }
         this.cityShow=false;
+    },
+    //修改日期格式
+    changeDate:(date)=>{
+       
+        if(date.toString().length<=1){
+            //  console.log(typeof  date)
+            return date='0'+date;
+        }else{
+            return date
+        }
     }
     },  
     
@@ -639,6 +654,9 @@ div.travelPeoplesList_con>.delete{
     justify-content: space-between;
     align-items: center;
     height: 0.8rem;
+    font-size: 0.34rem;
+}
+.picker-slot{
     font-size: 0.24rem;
 }
 </style>

@@ -7,16 +7,15 @@
     type="date"
     v-model="pickerValue">
   </mt-datetime-picker>
-        <!-- <mt-datetime-picker
+        <mt-datetime-picker
       ref="picker1"
       type="date"
       v-model="value1"
       year-format="{value} 年"
       month-format="{value} 月"
       date-format="{value} 日"
-     
       @confirm="handleChange">
-    </mt-datetime-picker> -->
+    </mt-datetime-picker>
     </div>
 </template>
 <script>
@@ -133,8 +132,8 @@ export default {
           sd:new Date('1970-01-01'),
           ed:new Date(),
           startDate: new Date('2014-1-1'),
-      endDate: new Date(),
-      value1:false,
+        endDate: new Date(),
+        value1:false,
             myAdress:null,
             slots: [
                 {

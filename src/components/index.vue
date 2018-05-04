@@ -18,7 +18,6 @@
                     <div class="main_list_title">差旅订单</div>
                 </div>
             </div>
-        
         <div class="section">
             <div class="section_list">
                 <div class="section_list_icon"><img src="../assets/jiudian@3x.png" ></div>
@@ -46,7 +45,6 @@
                     </div>
         </div>
             </div>
-       
     </div>
     <div class="bottom">
             <div class="bottom_left">
@@ -69,19 +67,46 @@ export default {
             mainList:[{"src":"../assets/chuchai@3x.png","title":"申请出差"},{"src":"../assets/baoxiao@3x.png","title":"申请报销"},{"src":"../assets/dingdan@3x.png","title":"差旅订单"}]
         }
     },
+    created(){
+       
+          
+    },
     mounted(){
+        function getQueryString(name) {
+            var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+            // var r='?userName=龍轩&userId=15'.substr(1).match(reg);
+            
+            var r = window.location.search.substr(1).match(reg);
+            alert(r)
+            if (r != null) {
+                return r[2];
+            }
+            return null;
+        }
+        this.userName=getQueryString('userName')
+        // alert(getQueryString('userName'))
+        // alert(getQueryString('userId'))
     //   var data={"code":200,"data":{"D":[{"businessEmpCompid":2,"businessEmpDet":"外交部","businessEmpId":3,"businessEmpLevel":"c","businessEmpName":"迪丽热巴","businessEmpNum":"1160","businessEmpPosition":"金鹰"}],"W":[{"businessEmpCompid":2,"businessEmpDet":"销售部","businessEmpId":1,"businessEmpLevel":"A","businessEmpName":"吴奇隆","businessEmpNum":"1140","businessEmpPosition":"经理"},{"businessEmpCompid":2,"businessEmpDet":"市场部","businessEmpId":2,"businessEmpLevel":"B","businessEmpName":"吴彦祖","businessEmpNum":"1150","businessEmpPosition":"干部"}]},"failMessage":"","message":"请求成功"}
     //     var json=data.data;
     //     for(var key in json){
     //         console.log(json[key])
     //     } 
-
+       
+        function ready() {
+  console.log(window.__wxjs_environment === 'miniprogram') // true
+}
+if (!window.WeixinJSBridge || !WeixinJSBridge.invoke) {
+  document.addEventListener('WeixinJSBridgeReady', ready, false)
+} else {
+  ready()
+}
     },
     methods:{
         toApproval:function(){
             this.$router.push({path:'/approval'})
         },
         toApply:function(){
+           wx.miniProgram.navigateTo({url:'/pages/apply/apply?userName='+this.userName})
             this.$router.push({path:'/apply'})
         }
     }
